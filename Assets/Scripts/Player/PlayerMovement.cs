@@ -4,7 +4,7 @@ namespace Player {
     [SelectionBase]
     [RequireComponent(typeof(CharacterController))]
     public class PlayerMovement : MonoBehaviour {
-        // Fields
+        // Fields and Properties
         #region Components
         private PlayerAnimator _playerAnimator;
         private CharacterController _characterController;
@@ -28,8 +28,8 @@ namespace Player {
         private const float GRAVITY = -9.81f;
         #endregion
 
-        // Functions
-        #region Unity Events
+        // Methods
+        #region Unity Methods
         private void Awake() {
             _playerAnimator = GetComponentInChildren<PlayerAnimator>();
             _characterController = GetComponent<CharacterController>();
@@ -52,7 +52,7 @@ namespace Player {
         }
         #endregion
 
-        #region Private Functions
+        #region Private Methods
         private void HandleMovement() {
             if (_canMove) {
                 // Calcular el movimiento en relacion a la camara
@@ -102,7 +102,7 @@ namespace Player {
         }
         #endregion
 
-        #region Public Functions
+        #region Public Methods
         public bool IsMoving() {
             return _movementDir.x != 0 || _movementDir.z != 0;
         }
