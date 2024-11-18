@@ -9,7 +9,6 @@ namespace Player {
         public static readonly int IsFalling = Animator.StringToHash("IsFalling");
         public static readonly int EmoteTrigger = Animator.StringToHash("EmoteTrigger");
 
-
         private void Awake() {
             _animator = GetComponent<Animator>();
         }

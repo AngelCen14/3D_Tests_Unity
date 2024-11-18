@@ -19,7 +19,6 @@ namespace Player {
             } else {
                 Instance = this;
             }
-
             _inputActions = new InputActions();
         }
 

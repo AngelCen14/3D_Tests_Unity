@@ -627,11 +627,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9b032f7a8ae72d489361ba815950531, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canMove: 0
   walkSpeed: 10
   rotationSpeed: 5
-  _canMove: 0
   mass: 4
   fallSpeed: 6
+  jumpForce: 10
 --- !u!1001 &774711257
 PrefabInstance:
   m_ObjectHideFlags: 0

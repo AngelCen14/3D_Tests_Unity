@@ -13,12 +13,12 @@ namespace Player {
 
         #region Movement
         [Header("Movement")]
+        [SerializeField] private bool canMove;
         [SerializeField] private float walkSpeed = 10f;
         [SerializeField] private float rotationSpeed = 5f;
         private Vector3 _movementDir;
         private Vector3 _rotationDir;
-        [SerializeField]
-        private bool _canMove;
+        private float _speed;
         #endregion
 
         #region Gravity
@@ -38,13 +38,13 @@ namespace Player {
         }
 
         private void Start() {
-            _canMove = true;
+            canMove = true;
         }
 
         private void Update() {
-            HandleMovement();
-            HandleRotation();
-            HandleAnimation();
+            Move();
+            Rotate();
+            Animate();
         }
 
         private void OnDrawGizmos() {
@@ -54,8 +54,8 @@ namespace Player {
         #endregion
 
         #region Private Methods
-        private void HandleMovement() {
-            if (_canMove) {
+        private void Move() {
+            if (canMove) {
                 // Calcular el movimiento en relacion a la camara (solo si se puede mover)
                 _movementDir = _cameraTransform.forward * GameInput.Instance.MovementInput.y;
                 _movementDir += _cameraTransform.right * GameInput.Instance.MovementInput.x;
@@ -66,11 +66,11 @@ namespace Player {
             _movementDir.Normalize();
 
             // Ajustar la velocidad segun el estado del jugador
-            float finalSpeed = IsFalling() ? fallSpeed * mass : walkSpeed;
-            _characterController.Move(_movementDir * (finalSpeed * Time.deltaTime));
+            _speed = IsFalling() ? fallSpeed * mass : walkSpeed;
+            _characterController.Move(_movementDir * (_speed * Time.deltaTime));
         }
 
-        private void HandleRotation() {
+        private void Rotate() {
             _rotationDir = _movementDir;
             _rotationDir.y = 0; // Ignorar la y, para que el personaje no mire hacia abajo
             if (_rotationDir == Vector3.zero) return;
@@ -80,7 +80,7 @@ namespace Player {
             Debug.DrawRay(transform.position, _rotationDir, Color.red);
         }
 
-        private void HandleAnimation() {
+        private void Animate() {
             _playerAnimator.SetAnimatorBool(PlayerAnimator.IsMoving, IsMoving());
             _playerAnimator.SetAnimatorBool(PlayerAnimator.IsFalling, IsFalling());
         }
@@ -102,7 +102,6 @@ namespace Player {
         }
         public bool IsFalling() {
             return !_characterController.isGrounded;
-            
         }
         #endregion
     }
