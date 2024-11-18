@@ -5,8 +5,8 @@ namespace Player {
         private Animator _animator;
 
         // Parametros animator
-        public static readonly int IsMoving = Animator.StringToHash("isMoving");
-        public static readonly int IsFalling = Animator.StringToHash("isFalling");
+        public static readonly int IsMoving = Animator.StringToHash("IsMoving");
+        public static readonly int IsFalling = Animator.StringToHash("IsFalling");
         public static readonly int EmoteTrigger = Animator.StringToHash("EmoteTrigger");
 
 

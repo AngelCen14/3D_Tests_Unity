@@ -13,17 +13,18 @@ namespace Player {
 
         #region Movement
         [Header("Movement")]
-        [SerializeField] private float walkSpeed = 5.0f;
-        [SerializeField] private float rotationSpeed = 5.0f;
+        [SerializeField] private float walkSpeed = 10f;
+        [SerializeField] private float rotationSpeed = 5f;
         private Vector3 _movementDir;
         private Vector3 _rotationDir;
+        [SerializeField]
         private bool _canMove;
         #endregion
 
         #region Gravity
         [Header("Gravity")]
-        [SerializeField] private float mass = 1.0f;
-        [SerializeField] private float fallSpeed = 1.0f;
+        [SerializeField] private float mass = 4f;
+        [SerializeField] private float fallSpeed = 6f;
         private float _verticalVelocity;
         private const float GRAVITY = -9.81f;
         #endregion
@@ -55,25 +56,23 @@ namespace Player {
         #region Private Methods
         private void HandleMovement() {
             if (_canMove) {
-                // Calcular el movimiento en relacion a la camara
+                // Calcular el movimiento en relacion a la camara (solo si se puede mover)
                 _movementDir = _cameraTransform.forward * GameInput.Instance.MovementInput.y;
                 _movementDir += _cameraTransform.right * GameInput.Instance.MovementInput.x;
             }
+
+            // Calcular la gravedad
             _movementDir.y = CalculateVerticalForce();
             _movementDir.Normalize();
-            if (IsFalling()) {
-                // Si el jugador esta cayendo cancelar el movimiento que no sea vertical
-                StopGroundMovement();
-                _characterController.Move(_movementDir * (fallSpeed * mass * Time.deltaTime));
-            } else if (!IsFalling() && _canMove) {
-                // Mover al jugador a la direccion del input
-                _characterController.Move(_movementDir * (walkSpeed * Time.deltaTime));
-            }
+
+            // Ajustar la velocidad segun el estado del jugador
+            float finalSpeed = IsFalling() ? fallSpeed * mass : walkSpeed;
+            _characterController.Move(_movementDir * (finalSpeed * Time.deltaTime));
         }
 
         private void HandleRotation() {
             _rotationDir = _movementDir;
-            _rotationDir.y = 0; // Ignorar la gravedad en el vector de rotacion, para que el personaje no mire abajo
+            _rotationDir.y = 0; // Ignorar la y, para que el personaje no mire hacia abajo
             if (_rotationDir == Vector3.zero) return;
             _rotationDir.Normalize();
             Quaternion targetRotation = Quaternion.LookRotation(_rotationDir);
@@ -95,20 +94,15 @@ namespace Player {
             }
             return _verticalVelocity;
         }
-
-        private void StopGroundMovement() {
-            _movementDir.x = 0;
-            _movementDir.z = 0;
-        }
         #endregion
 
         #region Public Methods
         public bool IsMoving() {
             return _movementDir.x != 0 || _movementDir.z != 0;
         }
-
         public bool IsFalling() {
             return !_characterController.isGrounded;
+            
         }
         #endregion
     }
