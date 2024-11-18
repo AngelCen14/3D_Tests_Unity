@@ -22,6 +22,8 @@ namespace Player {
         }
 
         private void OnEmotePerformed() {
+            /* Esta animacion utiliza una Avatar Mask para reproducirse a la vez que 
+             * el resto de animaciones, pero solo en la parte superior del cuerpo */
             _animator.SetTrigger(EmoteTrigger);
         }
 
