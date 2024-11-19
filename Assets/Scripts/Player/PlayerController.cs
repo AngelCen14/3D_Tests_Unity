@@ -13,18 +13,37 @@ namespace Player {
 
         #region Movement
         [Header("Movement")]
-        [SerializeField] private bool canMove;
-        [SerializeField] private float walkSpeed = 10f;
-        [SerializeField] private float rotationSpeed = 5f;
+
+        [SerializeField]
+        private bool canMove;
+        [SerializeField]
+        private float walkSpeed = 10f;
+
+        [SerializeField]
+        private float rotationSpeed = 5f;
+
+        private float _currentSpeed;
         private Vector3 _movement;
         private Vector3 _rotation;
         #endregion
 
         #region Gravity
         [Header("Gravity")]
-        [SerializeField] private float mass = 10f;
+
+        [SerializeField]
+        [Range(1f, 30f)]
+        private float mass = 10f;
+
         private float _verticalVelocity;
         private const float GRAVITY = -9.81f;
+        #endregion
+
+        #region Jump
+        [Header("Jump")]
+
+        [SerializeField]
+        [Range(0f, 100f)]
+        private float jumpForce = 40f;
         #endregion
 
         // Methods
@@ -58,9 +77,12 @@ namespace Player {
                 _movement = _cameraTransform.forward * GameInput.Instance.MovementInput.y;
                 _movement += _cameraTransform.right * GameInput.Instance.MovementInput.x;
                 _movement.Normalize();
-            }
-            _movement *= walkSpeed;
+            } else _movement = Vector2.zero;
+
+            _currentSpeed = _movement.magnitude * walkSpeed;
+            _movement *= _currentSpeed;
             SetGravity();
+
             _characterController.Move(_movement * Time.deltaTime);
         }
 
@@ -83,10 +105,16 @@ namespace Player {
             if (_characterController.isGrounded) {
                 // Empujar al jugador hacia el suelo para asegurar que no este cayendo todo el tiempo
                 _verticalVelocity = -1;
-                _movement.y = _verticalVelocity;
             } else {
                 _verticalVelocity += (GRAVITY * mass) * Time.deltaTime; // Aplicar la gravedad
-                _movement.y = _verticalVelocity;
+            }
+            Jump();
+            _movement.y = _verticalVelocity;
+        }
+
+        private void Jump() {
+            if (_characterController.isGrounded && GameInput.Instance.Jump) {
+                _verticalVelocity = jumpForce;
             }
         }
         #endregion

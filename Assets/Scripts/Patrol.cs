@@ -1,4 +1,3 @@
-using UnityEditor;
 using UnityEngine;
 
 public class Patrol : MonoBehaviour {
@@ -23,7 +22,7 @@ public class Patrol : MonoBehaviour {
         Vector3 direction = (wayPoints[_currentWaypointIndex] - transform.position).normalized;
         transform.position += direction * (speed * Time.deltaTime);
 
-        // Verificar si llegó al waypoint actual
+        // Verificar si llegÃ³ al waypoint actual
         if (Vector3.Distance(transform.position, wayPoints[_currentWaypointIndex]) < 0.1f) {
             // Cambiar al siguiente waypoint (circular)
             _currentWaypointIndex = (_currentWaypointIndex + 1) % wayPoints.Length;
