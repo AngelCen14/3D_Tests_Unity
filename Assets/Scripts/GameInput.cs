@@ -9,6 +9,7 @@ namespace Player {
         InputActions _inputActions;
 
         public Vector2 MovementInput { get; private set; }
+        public bool Jump {  get; private set; }
 
         public event Action EmotePerformed;
 
@@ -24,7 +25,9 @@ namespace Player {
 
         public void Start() {
             _inputActions.Player.Move.performed += OnMovePerformed;
-            _inputActions.Player.Move.canceled += OnMoveCancelled; ;
+            _inputActions.Player.Move.canceled += OnMoveCancelled;
+            _inputActions.Player.Jump.performed += OnJumpStatusChanged;
+            _inputActions.Player.Jump.canceled += OnJumpStatusChanged;
             _inputActions.Player.Emote.performed += OnEmotePerformed;
         }
 
@@ -37,6 +40,8 @@ namespace Player {
 
             _inputActions.Player.Move.performed -= OnMovePerformed;
             _inputActions.Player.Move.canceled -= OnMoveCancelled;
+            _inputActions.Player.Jump.performed -= OnJumpStatusChanged;
+            _inputActions.Player.Jump.canceled -= OnJumpStatusChanged;
             _inputActions.Player.Emote.performed -= OnEmotePerformed;
         }
         #endregion
@@ -50,6 +55,10 @@ namespace Player {
             MovementInput = Vector2.zero;
         }
         #endregion
+
+        private void OnJumpStatusChanged(CallbackContext context) {
+            Jump = context.ReadValueAsButton();
+        }
 
         private void OnEmotePerformed(CallbackContext callback) {
             EmotePerformed?.Invoke();

@@ -631,6 +631,7 @@ MonoBehaviour:
   walkSpeed: 10
   rotationSpeed: 5
   mass: 10
+  jumpForce: 40
 --- !u!1001 &774711257
 PrefabInstance:
   m_ObjectHideFlags: 0
