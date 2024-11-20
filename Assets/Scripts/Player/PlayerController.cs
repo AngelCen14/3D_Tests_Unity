@@ -113,7 +113,7 @@ namespace Player {
         }
 
         private void Jump() {
-            if (_characterController.isGrounded && GameInput.Instance.Jump) {
+            if (_characterController.isGrounded && GameInput.Instance.JumpTriggered) {
                 _verticalVelocity = jumpForce;
             }
         }

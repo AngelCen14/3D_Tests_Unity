@@ -5,10 +5,10 @@ using UnityEngine.InputSystem;
 public class GameInput : MonoBehaviour {
     public static GameInput Instance { get; private set; }
 
-    InputActions _inputActions;
+    private InputActions _inputActions;
 
     public Vector2 MovementInput { get; private set; }
-    public bool Jump {  get; private set; }
+    public bool JumpTriggered { get; private set; }
 
     public event Action EmotePerformed;
 
@@ -22,26 +22,32 @@ public class GameInput : MonoBehaviour {
         _inputActions = new InputActions();
     }
 
-    public void Start() {
-        _inputActions.Player.Move.performed += OnMovePerformed;
-        _inputActions.Player.Move.canceled += OnMoveCancelled;
-        _inputActions.Player.Jump.performed += OnJumpStatusChanged;
-        _inputActions.Player.Jump.canceled += OnJumpStatusChanged;
-        _inputActions.Player.Emote.performed += OnEmotePerformed;
+    private void LateUpdate() {
+        /* Reiniciar el estado del salto despues de cada frame
+         * para evitar que el jugador salte mientras el boton
+         * este presionado, y hacer que salte solo cuando se pulsa
+         */
+        if (JumpTriggered) JumpTriggered = false;
     }
 
     private void OnEnable() {
         _inputActions.Enable();
+
+        _inputActions.Player.Move.performed += OnMovePerformed;
+        _inputActions.Player.Move.canceled += OnMoveCancelled;
+        _inputActions.Player.Jump.performed += OnJumpButtonStateChanged;
+        _inputActions.Player.Jump.canceled += OnJumpButtonStateChanged;
+        _inputActions.Player.Emote.performed += OnEmotePerformed;
     }
 
     private void OnDisable() {
-        _inputActions.Disable();
-
         _inputActions.Player.Move.performed -= OnMovePerformed;
         _inputActions.Player.Move.canceled -= OnMoveCancelled;
-        _inputActions.Player.Jump.performed -= OnJumpStatusChanged;
-        _inputActions.Player.Jump.canceled -= OnJumpStatusChanged;
+        _inputActions.Player.Jump.performed -= OnJumpButtonStateChanged;
+        _inputActions.Player.Jump.canceled -= OnJumpButtonStateChanged;
         _inputActions.Player.Emote.performed -= OnEmotePerformed;
+
+        _inputActions.Disable();
     }
     #endregion
 
@@ -50,16 +56,18 @@ public class GameInput : MonoBehaviour {
         MovementInput = context.ReadValue<Vector2>().normalized;
     }
 
-    private void OnMoveCancelled(InputAction.CallbackContext callback) {
+    private void OnMoveCancelled(InputAction.CallbackContext context) {
         MovementInput = Vector2.zero;
     }
     #endregion
 
-    private void OnJumpStatusChanged(InputAction.CallbackContext context) {
-        Jump = context.ReadValueAsButton();
+    #region Jump Events
+    private void OnJumpButtonStateChanged(InputAction.CallbackContext context) {
+        JumpTriggered = context.ReadValueAsButton();
     }
+    #endregion
 
-    private void OnEmotePerformed(InputAction.CallbackContext callback) {
+    private void OnEmotePerformed(InputAction.CallbackContext context) {
         EmotePerformed?.Invoke();
     }
 }
