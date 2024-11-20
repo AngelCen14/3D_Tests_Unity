@@ -17,7 +17,7 @@ namespace Player {
         [SerializeField]
         private bool canMove;
         [SerializeField]
-        private float walkSpeed = 10f;
+        private float walkSpeed = 5f;
 
         [SerializeField]
         private float rotationSpeed = 5f;
