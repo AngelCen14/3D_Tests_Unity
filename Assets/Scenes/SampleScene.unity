@@ -612,7 +612,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 219110397}
-  - {fileID: 778326750}
+  - {fileID: 543450652640744335}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &747757309
@@ -632,23 +632,13 @@ MonoBehaviour:
   rotationSpeed: 5
   mass: 10
   jumpForce: 40
---- !u!1 &778326749 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c256492ffa1417f4d8ecb378a51a4e9e, type: 3}
-  m_PrefabInstance: {fileID: 1093039204}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &778326750 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c256492ffa1417f4d8ecb378a51a4e9e, type: 3}
-  m_PrefabInstance: {fileID: 1093039204}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &778326751
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 778326749}
+  m_GameObject: {fileID: 919132148100450613}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 890bfd98ad8728e4195e95cdbac93261, type: 3}
@@ -2068,6 +2058,16 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2121016971}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &543450652640744335 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c256492ffa1417f4d8ecb378a51a4e9e, type: 3}
+  m_PrefabInstance: {fileID: 1093039204}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &919132148100450613 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c256492ffa1417f4d8ecb378a51a4e9e, type: 3}
+  m_PrefabInstance: {fileID: 1093039204}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
