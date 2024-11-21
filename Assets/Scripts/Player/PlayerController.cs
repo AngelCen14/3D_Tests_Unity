@@ -44,6 +44,7 @@ namespace Player {
         [SerializeField]
         [Range(0f, 100f)]
         private float jumpForce = 40f;
+        private bool _jumpTriggered;
         #endregion
 
         // Methods
@@ -56,6 +57,8 @@ namespace Player {
 
         private void Start() {
             canMove = true;
+            _jumpTriggered = false;
+            GameInput.Instance.JumpTriggered += OnJumpTriggered;
         }
 
         private void Update() {
@@ -64,24 +67,26 @@ namespace Player {
             Animate();
         }
 
-        private void OnDrawGizmos() {
-            /*Gizmos.color = Color.red;
-            Gizmos.DrawRay(transform.position, _rotationDir);*/
+        private void OnDisable() {
+            GameInput.Instance.JumpTriggered -= OnJumpTriggered;
         }
         #endregion
 
         #region Private Methods
         private void Move() {
+            // Obtener el input de movimiento
+            Vector2 movementInput = GameInput.Instance.GetMovementInput();
             if (canMove) {
                 // Calcular el movimiento en relacion a la camara (solo si se puede mover)
-                _movement = _cameraTransform.forward * GameInput.Instance.MovementInput.y;
-                _movement += _cameraTransform.right * GameInput.Instance.MovementInput.x;
+                _movement = _cameraTransform.forward * movementInput.y;
+                _movement += _cameraTransform.right * movementInput.x;
                 _movement.Normalize();
             } else _movement = Vector2.zero;
 
             _currentSpeed = _movement.magnitude * walkSpeed;
             _movement *= _currentSpeed;
-            SetGravity();
+
+            ApplyGravity(); // Aplicar la gravedad y los saltos
 
             _characterController.Move(_movement * Time.deltaTime);
         }
@@ -93,7 +98,7 @@ namespace Player {
             _rotation.Normalize();
             Quaternion targetRotation = Quaternion.LookRotation(_rotation);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            Debug.DrawRay(transform.position, _rotation, Color.red);
+            Debug.DrawRay(transform.position + Vector3.up * 0.5f, _rotation, Color.red);
         }
 
         private void Animate() {
@@ -101,7 +106,7 @@ namespace Player {
             _playerAnimator.SetAnimatorBool(PlayerAnimator.IsFalling, IsFalling());
         }
 
-        private void SetGravity() {
+        private void ApplyGravity() {
             if (_characterController.isGrounded) {
                 // Empujar al jugador hacia el suelo para asegurar que no este cayendo todo el tiempo
                 _verticalVelocity = -1;
@@ -113,8 +118,9 @@ namespace Player {
         }
 
         private void Jump() {
-            if (_characterController.isGrounded && GameInput.Instance.JumpTriggered) {
+            if (_characterController.isGrounded && _jumpTriggered) {
                 _verticalVelocity = jumpForce;
+                _jumpTriggered = false;
             }
         }
         #endregion
@@ -125,6 +131,12 @@ namespace Player {
         }
         public bool IsFalling() {
             return !_characterController.isGrounded;
+        }
+        #endregion
+
+        #region Event Listeners
+        private void OnJumpTriggered() {
+            _jumpTriggered = true;
         }
         #endregion
     }

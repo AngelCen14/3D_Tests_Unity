@@ -17,7 +17,7 @@ namespace Player {
             GameInput.Instance.EmotePerformed += OnEmotePerformed;
         }
 
-        private void OnDisable() {
+        private void OnDestroy() {
             GameInput.Instance.EmotePerformed -= OnEmotePerformed;
         }
 
