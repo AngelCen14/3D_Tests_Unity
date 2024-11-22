@@ -7,6 +7,8 @@ public class GameInput : MonoBehaviour {
 
     private InputActions _inputActions;
 
+    public bool Sprint { get; private set; }
+
     public event Action EmotePerformed;
     public event Action JumpTriggered;
 
@@ -17,11 +19,17 @@ public class GameInput : MonoBehaviour {
         _inputActions = new InputActions();
         _inputActions.Enable();
 
+        _inputActions.Player.Sprint.performed += OnSprintStateChanged;
+        _inputActions.Player.Sprint.canceled += OnSprintStateChanged;
         _inputActions.Player.Jump.performed += OnJumpPerformed;
         _inputActions.Player.Emote.performed += OnEmotePerformed;
     }
 
+    
+
     private void OnDestroy() {
+        _inputActions.Player.Sprint.performed -= OnSprintStateChanged;
+        _inputActions.Player.Sprint.canceled -= OnSprintStateChanged;
         _inputActions.Player.Jump.performed -= OnJumpPerformed;
         _inputActions.Player.Emote.performed -= OnEmotePerformed;
 
@@ -36,6 +44,10 @@ public class GameInput : MonoBehaviour {
     #endregion
 
     #region Input Events
+    private void OnSprintStateChanged(InputAction.CallbackContext context) {
+        Sprint = context.ReadValueAsButton();
+    }
+
     private void OnJumpPerformed(InputAction.CallbackContext context) {
         JumpTriggered?.Invoke();
     }

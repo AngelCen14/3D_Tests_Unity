@@ -5,9 +5,10 @@ namespace Player {
         private Animator _animator;
 
         // Parametros animator
-        public static readonly int IsMoving = Animator.StringToHash("IsMoving");
         public static readonly int IsFalling = Animator.StringToHash("IsFalling");
         public static readonly int EmoteTrigger = Animator.StringToHash("EmoteTrigger");
+        public static readonly int JumpTrigger = Animator.StringToHash("JumpTrigger");
+        public static readonly int Speed = Animator.StringToHash("Speed");
 
         private void Awake() {
             _animator = GetComponent<Animator>();
@@ -29,6 +30,14 @@ namespace Player {
 
         public void SetAnimatorBool(int param, bool value) {
             _animator.SetBool(param, value);
+        }
+
+        public void SetAnimatorTrigger(int trigger) {
+            _animator.SetTrigger(trigger);
+        }
+
+        public void SetAnimatorFloat(int param, float value) {
+            _animator.SetFloat(param, value);
         }
     }
 }
