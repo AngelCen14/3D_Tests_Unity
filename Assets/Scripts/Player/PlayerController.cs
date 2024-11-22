@@ -11,9 +11,6 @@ namespace Player {
         private Transform _cameraTransform;
         #endregion
 
-        [SerializeField]
-        PlayerState _state;
-
         #region Movement
         [Header("Movement")]
         [SerializeField]
@@ -78,15 +75,15 @@ namespace Player {
             _jumpTriggered = false;
             _fallTimer = fallTimeout;
             _jumpTimer = jumpTimeout;
-            _state = PlayerState.Idle;
             GameInput.Instance.JumpTriggered += OnJumpTriggered;
         }
 
         private void Update() {
+            InputToMovement();
+            JumpAndGravity();
             Move();
-            Rotate();
-            UpdateState();
-            Animate();
+            RotateTowardsMovement();
+            SetAnimatorValues();
         }
 
         private void OnDrawGizmos() {
@@ -101,6 +98,10 @@ namespace Player {
 
         #region Private Methods
         private void Move() {
+            _characterController.Move(_movement * Time.deltaTime);
+        }
+
+        private void InputToMovement() {
             // Obtener el input de movimiento
             Vector2 movementInput = GameInput.Instance.GetMovementInput();
             if (canMove) {
@@ -113,11 +114,7 @@ namespace Player {
             } else {
                 _movement = Vector3.zero;
             }
-
             ApplySpeed(movementInput); // Calcular la velocidad y aplicarsela al movimiento
-            ApplyGravity(); // Aplicar la gravedad y los saltos
-
-            _characterController.Move(_movement * Time.deltaTime);
         }
 
         private void ApplySpeed(Vector2 movementInput) {
@@ -146,7 +143,7 @@ namespace Player {
             _movement *= _speed;
         }
 
-        private void Rotate() {
+        private void RotateTowardsMovement() {
             _rotation = _movement;
             _rotation.y = 0; // Ignorar la y, para que el personaje no mire hacia abajo
             if (_rotation == Vector3.zero) return;
@@ -155,41 +152,12 @@ namespace Player {
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
 
-        private void Animate() {
-            _playerAnimator.SetAnimatorFloat(PlayerAnimator.Speed, _animationBlendSpeed);
-            _playerAnimator.SetAnimatorBool(PlayerAnimator.IsFalling, _isFalling);
-        }
-
-        private void ApplyGravity() {
-            if (_characterController.isGrounded) {
-                // Empujar al jugador hacia el suelo para asegurar que no este cayendo todo el tiempo
-                _verticalVelocity = -1;
-            } else {
-                _verticalVelocity += (GRAVITY * mass) * Time.deltaTime; // Aplicar la gravedad
-            }
-            Jump();
-            _movement.y = _verticalVelocity;
-            HandleFall();
-        }
-
-        private void Jump() {
-            if (_characterController.isGrounded && _jumpTriggered && _jumpTimer <= 0.0f) {
-                _verticalVelocity = jumpForce;
-                _jumpTimer = jumpTimeout;
-                _playerAnimator.SetAnimatorTrigger(PlayerAnimator.JumpTrigger);
-            }
-
-            if (_jumpTimer >= 0.0f && _characterController.isGrounded) {
-                _jumpTimer -= Time.deltaTime;
-            }
-
-            _jumpTriggered = false;
-        }
-
-        private void HandleFall() {
+        private void JumpAndGravity() {
             if (_characterController.isGrounded) {
                 _fallTimer = fallTimeout;
                 _isFalling = false;
+                // Empujar al jugador hacia el suelo para asegurar que no este cayendo todo el tiempo
+                _verticalVelocity = -1;
             } else {
                 // Timeout para que el jugador no caiga cuando baja escaleras o rampas
                 if (_fallTimer >= 0.0f) {
@@ -198,15 +166,30 @@ namespace Player {
                 } else {
                     _isFalling = true;
                 }
+                _verticalVelocity += (GRAVITY * mass) * Time.deltaTime; // Aplicar la gravedad
             }
+            HandleJump();
+            _movement.y = _verticalVelocity;
         }
 
-        private void UpdateState() {
-            if (_speed == 0) _state = PlayerState.Idle;
-            if (_speed <= walkSpeed && _speed > 0) _state = PlayerState.Walking;
-            if (_speed <= runSpeed && _speed > walkSpeed) _state = PlayerState.Running;
+        private void HandleJump() {
+            if (_characterController.isGrounded && _jumpTriggered && _jumpTimer <= 0.0f) {
+                _verticalVelocity = jumpForce;
+                _jumpTimer = jumpTimeout;
+                _playerAnimator.SetAnimatorTrigger(PlayerAnimator.JumpTrigger);
+            }
 
-            if (_isFalling) _state = PlayerState.Falling;
+            if (_jumpTimer >= 0.0f && _characterController.isGrounded) {
+                _jumpTimer -= Time.deltaTime;
+                _jumpTimer = Mathf.Clamp(_jumpTimer, 0.0f, jumpTimeout);
+            }
+
+            _jumpTriggered = false;
+        }
+
+        private void SetAnimatorValues() {
+            _playerAnimator.SetAnimatorFloat(PlayerAnimator.Speed, _animationBlendSpeed);
+            _playerAnimator.SetAnimatorBool(PlayerAnimator.IsFalling, _isFalling);
         }
         #endregion
 
